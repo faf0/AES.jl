@@ -18,7 +18,7 @@ Use Pkg.clone with the corresponding URL in Julia to install this package.
 
 # Example Usage
 
-The following shows how to use AES in CTR mode for encryption.
+The following code shows how to use AES in OFB mode for encryption.
 
 ~~~
 using AES
