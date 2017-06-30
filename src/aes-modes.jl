@@ -19,9 +19,9 @@ end
 # CBC mode is carried out in encryption direction if the parameter
 # encrypt is true. Otherwise, ECB mode is carried out in decryption
 # direction.
-function AESECB(blocks::Array{Uint8, 1}, key::Array{Uint8, 1}, encrypt::Bool)
+function AESECB(blocks::Array{UInt8, 1}, key::Array{UInt8, 1}, encrypt::Bool)
 	noBlocks = paddedCheck(blocks, key)
-	o = Array(Uint8, length(blocks))
+	o = Array(UInt8, length(blocks))
 
 	for i=1:noBlocks
 		indices = blockIndices(blocks, i)
@@ -50,13 +50,13 @@ end
 # CBC mode is carried out in encryption direction if the parameter
 # encrypt is true. Otherwise, CBC mode is carried out in decryption
 # direction.
-function AESCBC(blocks::Array{Uint8, 1}, key::Array{Uint8, 1},
-	iv::Array{Uint8, 1}, encrypt::Bool)
+function AESCBC(blocks::Array{UInt8, 1}, key::Array{UInt8, 1},
+	iv::Array{UInt8, 1}, encrypt::Bool)
 	noBlocks = paddedCheck(blocks, key)
 	if length(iv) != BLOCK_BYTES
 		error("IV does not have 16 bytes!")
 	end
-	o = Array(Uint8, length(blocks))
+	o = Array(UInt8, length(blocks))
 	prev = iv
 
 	for i=1:noBlocks
@@ -95,10 +95,10 @@ end
 # CFB mode is carried out in encryption direction if the parameter
 # encrypt is true. Otherwise, CFB mode is carried out in decryption
 # direction.
-function AESCFB(blocks::Array{Uint8, 1}, key::Array{Uint8, 1},
-	iv::Array{Uint8, 1}, encrypt::Bool)
+function AESCFB(blocks::Array{UInt8, 1}, key::Array{UInt8, 1},
+	iv::Array{UInt8, 1}, encrypt::Bool)
 	noBlocks = keyStreamCheck(blocks, key, iv)
-	o = Array(Uint8, length(blocks))
+	o = Array(UInt8, length(blocks))
 	curr = iv
 
 	for i=1:noBlocks
@@ -126,10 +126,10 @@ function AESOFB(blocks::ASCIIString, key::ASCIIString, iv::ASCIIString)
 end
 
 # Carries out AES in OFB mode on the given blocks using the given key.
-function AESOFB(blocks::Array{Uint8, 1}, key::Array{Uint8, 1},
-	iv::Array{Uint8, 1})
+function AESOFB(blocks::Array{UInt8, 1}, key::Array{UInt8, 1},
+	iv::Array{UInt8, 1})
 	noBlocks = keyStreamCheck(blocks, key, iv)
-	o = Array(Uint8, length(blocks))
+	o = Array(UInt8, length(blocks))
 	prev = iv
 
 	for i=1:noBlocks
@@ -158,11 +158,11 @@ end
 # encrypt is true. Otherwise, CTR mode is carried out in decryption
 # direction. Treats the low eight bytes of the iv array as the little endian
 # counter.
-function AESCTR(blocks::Array{Uint8, 1}, key::Array{Uint8, 1},
-	iv::Array{Uint8, 1})
+function AESCTR(blocks::Array{UInt8, 1}, key::Array{UInt8, 1},
+	iv::Array{UInt8, 1})
 	noBlocks = keyStreamCheck(blocks, key, iv)
 	curr = copy(iv)
-	o = Array(Uint8, length(blocks))
+	o = Array(UInt8, length(blocks))
 
 	for i=1:noBlocks
 		indices = blockIndices(blocks, i)
@@ -184,7 +184,7 @@ end
 # Checks whether the parameters are OK for ECB/CBC mode.
 # Returns the number of blocks including the last block whose length must
 # be as long as the standard block length (16 bytes).
-function paddedCheck(blocks::Array{Uint8, 1}, key::Array{Uint8, 1})
+function paddedCheck(blocks::Array{UInt8, 1}, key::Array{UInt8, 1})
 	noBlocks = div(length(blocks), BLOCK_BYTES)
 	if (noBlocks < 1) || ((noBlocks * BLOCK_BYTES) != length(blocks))
 		error("No blocks or length of blocks is not a multplile of ",
@@ -198,8 +198,8 @@ end
 # Checks whether the parameters are OK for CFB/OFB/CTR mode.
 # Returns the number of blocks including the last block whose length may
 # be less than standard block length (16 bytes).
-function keyStreamCheck(blocks::Array{Uint8, 1}, key::Array{Uint8, 1},
-	iv::Array{Uint8, 1})
+function keyStreamCheck(blocks::Array{UInt8, 1}, key::Array{UInt8, 1},
+	iv::Array{UInt8, 1})
 	if length(blocks) < 1
 		error("blocks must contain at least one byte!")
 	end
@@ -214,7 +214,7 @@ end
 
 # Returns the indices of the bytes of a block given a one-based
 # block number. The last block may be incomplete.
-function blockIndices(blocks::Array{Uint8, 1}, blockNumber::Int)
+function blockIndices(blocks::Array{UInt8, 1}, blockNumber::Int)
 	assert(blockNumber >= 1)
 	((blockNumber - 1) * BLOCK_BYTES + 1):(min(blockNumber * BLOCK_BYTES, length(blocks)))
 end

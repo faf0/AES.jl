@@ -80,25 +80,25 @@ end
 
 # Encrypts the given plaintext block using the given key
 # and returns the resulting ciphertext.
-# Both the plaintext and key are arrays holding bytes of type Uint8.
-# The returned ciphertext is an array holding bytes of type Uint8.
-function AESEncrypt(plain::Array{Uint8, 1}, key::Array{Uint8, 1})
+# Both the plaintext and key are arrays holding bytes of type UInt8.
+# The returned ciphertext is an array holding bytes of type UInt8.
+function AESEncrypt(plain::Array{UInt8, 1}, key::Array{UInt8, 1})
 	(w, Nr) = AEScrypt(plain, key)
 	return AESCipher(plain, w, Nr)
 end
 
 # Decrypts the given ciphertext block using the given key
 # and returns the resulting plaintext.
-# Both the ciphertext and key are arrays holding bytes of type Uint8.
-# The returned plaintext is an array holding bytes of type Uint8.
-function AESDecrypt(cipher::Array{Uint8, 1}, key::Array{Uint8, 1})
+# Both the ciphertext and key are arrays holding bytes of type UInt8.
+# The returned plaintext is an array holding bytes of type UInt8.
+function AESDecrypt(cipher::Array{UInt8, 1}, key::Array{UInt8, 1})
 	(w, Nr) = AEScrypt(cipher, key)
 	return AESInvCipher(cipher, w, Nr)
 end
 
 # General function for checking the parameters of the encryption/decryption
 # functions and expanding the key.
-function AEScrypt(input::Array{Uint8, 1}, key::Array{Uint8, 1})
+function AEScrypt(input::Array{UInt8, 1}, key::Array{UInt8, 1})
 	if length(input) != (WORDLENGTH * Nb)
 		error("input must be a 16-byte block!")
 	end
@@ -109,7 +109,7 @@ end
 
 # Return a tuple (Nk, Nr) where Nk is the number of key blocks
 # and Nr is the number of rounds for the key size.
-function AESParameters(key::Array{Uint8, 1})
+function AESParameters(key::Array{UInt8, 1})
 	if mod(length(key), WORDLENGTH) != 0
 		error("the key length must be a multiple of four!")
 	end
@@ -125,10 +125,10 @@ function AESParameters(key::Array{Uint8, 1})
 	return (Nk, Nr)
 end
 
-function KeyExpansion(key::Array{Uint8, 1}, Nk::Int, Nr::Int)
+function KeyExpansion(key::Array{UInt8, 1}, Nk::Int, Nr::Int)
 	assert(length(key) == (WORDLENGTH * Nk))
 
-	w = Array(Uint8, WORDLENGTH * Nb * (Nr + 1))
+	w = Array(UInt8, WORDLENGTH * Nb * (Nr + 1))
 	w[1:(WORDLENGTH * Nk)] = copy(key)
 	i = Nk
 
@@ -146,12 +146,12 @@ function KeyExpansion(key::Array{Uint8, 1}, Nk::Int, Nr::Int)
 	return w
 end
 
-function SubWord(w::Array{Uint8, 1})
+function SubWord(w::Array{UInt8, 1})
 	assert(length(w) == WORDLENGTH)
 	map!(x -> SBOX[int(x) + 1], w)
 end
 
-function RotWord(w::Array{Uint8, 1})
+function RotWord(w::Array{UInt8, 1})
 	assert(length(w) == WORDLENGTH)
 	permute!(w, [2, 3, 4, 1])
 end
@@ -165,7 +165,7 @@ function Rcon(i::Int)
 	return [x, 0x00, 0x00, 0x00]
 end
 
-function AESCipher(inBytes::Array{Uint8, 1}, w::Array{Uint8, 1}, Nr::Int)
+function AESCipher(inBytes::Array{UInt8, 1}, w::Array{UInt8, 1}, Nr::Int)
 	assert(WORDLENGTH == Nb)
 	assert(length(inBytes) == (WORDLENGTH * Nb))
 	assert(length(w) == (WORDLENGTH * Nb * (Nr + 1)))
@@ -187,7 +187,7 @@ function AESCipher(inBytes::Array{Uint8, 1}, w::Array{Uint8, 1}, Nr::Int)
 	return state
 end
 
-function AESInvCipher(inBytes::Array{Uint8, 1}, w::Array{Uint8, 1}, Nr::Int)
+function AESInvCipher(inBytes::Array{UInt8, 1}, w::Array{UInt8, 1}, Nr::Int)
 	assert(WORDLENGTH == Nb)
 	assert(length(inBytes) == (WORDLENGTH * Nb))
 	assert(length(w) == (WORDLENGTH * Nb * (Nr + 1)))
@@ -219,29 +219,29 @@ function rowIndices(row::Int)
 	return [((row - 1) * Nb + 1):(row * Nb)]
 end
 
-function SubBytes(a::Array{Uint8, 1})
+function SubBytes(a::Array{UInt8, 1})
 	SubBytesGen(a, false)
 end
 
-function InvSubBytes(a::Array{Uint8, 1})
+function InvSubBytes(a::Array{UInt8, 1})
 	SubBytesGen(a, true)
 end
 
-function SubBytesGen(a::Array{Uint8, 1}, inv::Bool)
+function SubBytesGen(a::Array{UInt8, 1}, inv::Bool)
 	box = inv ? INVSBOX : SBOX
 	f = (x) -> box[int(x) + 1]
 	return map!(f, a)
 end
 
-function ShiftRows(a::Array{Uint8, 1})
+function ShiftRows(a::Array{UInt8, 1})
 	ShiftRowsGen(a, false)
 end
 
-function InvShiftRows(a::Array{Uint8, 1})
+function InvShiftRows(a::Array{UInt8, 1})
 	ShiftRowsGen(a, true)
 end
 
-function ShiftRowsGen(a::Array{Uint8, 1}, inv::Bool)
+function ShiftRowsGen(a::Array{UInt8, 1}, inv::Bool)
 	# permute columns in _last three_ rows
 	# note that a column is actually a row in memory
 	for r=2:Nb
@@ -253,15 +253,15 @@ function ShiftRowsGen(a::Array{Uint8, 1}, inv::Bool)
 	return a
 end
 
-function MixColumns(a::Array{Uint8, 1})
+function MixColumns(a::Array{UInt8, 1})
 	MixColumnsGen(a, false)
 end
 
-function InvMixColumns(a::Array{Uint8, 1})
+function InvMixColumns(a::Array{UInt8, 1})
 	MixColumnsGen(a, true)
 end
 
-function MixColumnsGen(a::Array{Uint8, 1}, inv::Bool)
+function MixColumnsGen(a::Array{UInt8, 1}, inv::Bool)
 	# note that columns are actually rows in memory
 	matrix = inv ? INVMIXCOLUMNSMATRIX : MIXCOLUMNSMATRIX
 	for c=1:Nb
@@ -277,7 +277,7 @@ function MixColumnsGen(a::Array{Uint8, 1}, inv::Bool)
 	return a
 end
 
-function AddRoundKey(s::Array{Uint8, 1}, w::Array{Uint8, 1})
+function AddRoundKey(s::Array{UInt8, 1}, w::Array{UInt8, 1})
 	assert(length(w) == (WORDLENGTH * Nb) && (WORDLENGTH == Nb))
 	return map!(gadd, s, s, w)
 end
