@@ -11,7 +11,7 @@ global const BLOCK_BYTES = (Nb * WORDLENGTH)
 # only hexadecimal characters.
 # The returned result is a string consisting of only hexadecimal
 # characters.
-function AESECB(blocks::ASCIIString, key::ASCIIString, encrypt::Bool)
+function AESECB(blocks::String, key::String, encrypt::Bool)
 	bytes2hex(AESECB(hex2bytes(blocks), hex2bytes(key), encrypt))
 end
 
@@ -40,8 +40,8 @@ end
 # only hexadecimal characters.
 # The returned result is a string consisting of only hexadecimal
 # characters.
-function AESCBC(blocks::ASCIIString, key::ASCIIString,
-	iv::ASCIIString, encrypt::Bool)
+function AESCBC(blocks::String, key::String,
+	iv::String, encrypt::Bool)
 	bytes2hex(AESCBC(hex2bytes(blocks), hex2bytes(key), hex2bytes(iv),
 	encrypt))
 end
@@ -85,8 +85,8 @@ end
 # only hexadecimal characters.
 # The returned result is a string consisting of only hexadecimal
 # characters.
-function AESCFB(blocks::ASCIIString, key::ASCIIString,
-	iv::ASCIIString, encrypt::Bool)
+function AESCFB(blocks::String, key::String,
+	iv::String, encrypt::Bool)
 	bytes2hex(AESCFB(hex2bytes(blocks), hex2bytes(key), hex2bytes(iv),
 	encrypt))
 end
@@ -121,7 +121,7 @@ end
 # only hexadecimal characters.
 # The returned result is a string consisting of only hexadecimal
 # characters.
-function AESOFB(blocks::ASCIIString, key::ASCIIString, iv::ASCIIString)
+function AESOFB(blocks::String, key::String, iv::String)
 	bytes2hex(AESOFB(hex2bytes(blocks), hex2bytes(key), hex2bytes(iv)))
 end
 
@@ -149,7 +149,7 @@ end
 # The returned result is a string consisting of only hexadecimal
 # characters. Treats the low eight bytes of the iv array as the little endian
 # counter.
-function AESCTR(blocks::ASCIIString, key::ASCIIString, iv::ASCIIString)
+function AESCTR(blocks::String, key::String, iv::String)
 	bytes2hex(AESCTR(hex2bytes(blocks), hex2bytes(key), hex2bytes(iv)))
 end
 

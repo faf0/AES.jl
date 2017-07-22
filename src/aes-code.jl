@@ -64,7 +64,7 @@ global const INVMIXCOLUMNSMATRIX = [
 # only hexadecimal characters.
 # The returned ciphertext is a string consisting of only hexadecimal
 # characters.
-function AESEncrypt(plain::ASCIIString, key::ASCIIString)
+function AESEncrypt(plain::String, key::String)
 	bytes2hex(AESEncrypt(hex2bytes(plain), hex2bytes(key)))
 end
 
@@ -74,7 +74,7 @@ end
 # only hexadecimal characters.
 # The returned plaintext is a string consisting of only hexadecimal
 # characters.
-function AESDecrypt(cipher::ASCIIString, key::ASCIIString)
+function AESDecrypt(cipher::String, key::String)
 	bytes2hex(AESDecrypt(hex2bytes(cipher), hex2bytes(key)))
 end
 
