@@ -77,7 +77,7 @@ global const ATABLE = [
 
 # Addition over GF(2^8)
 function gadd(a::UInt8, b::UInt8)
-	a $ b
+  xor.(a , b)
 end
 
 function gadd(v::Array{UInt8})
@@ -90,7 +90,7 @@ end
 
 # Subtraction over GF(2^8)
 function gsub(a::UInt8, b::UInt8)
-	a $ b
+  xor.(a , b)
 end
 
 # Fast multiplication using (anti-)logarithm table.

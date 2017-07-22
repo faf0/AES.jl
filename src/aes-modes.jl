@@ -62,12 +62,12 @@ function AESCBC(blocks::Array{UInt8, 1}, key::Array{UInt8, 1},
 	for i=1:noBlocks
 		indices = blockIndices(blocks, i)
 		if encrypt
-			curr = AESEncrypt(prev $ blocks[indices], key)
+      curr = AESEncrypt(xor.(prev , blocks[indices]), key)
 			o[indices] = curr
 			prev = curr
 		else
 			# decrypt
-			curr = AESDecrypt(blocks[indices], key) $ prev
+      curr = xor.(AESDecrypt(blocks[indices], key) , prev)
 			o[indices] = curr
 			prev = blocks[indices]
 		end
@@ -103,7 +103,7 @@ function AESCFB(blocks::Array{UInt8, 1}, key::Array{UInt8, 1},
 
 	for i=1:noBlocks
 		indices = blockIndices(blocks, i)
-		o[indices] = AESEncrypt(curr, key)[1:length(indices)] $ blocks[indices]
+		o[indices] = xor.(AESEncrypt(curr, key)[1:length(indices)] , blocks[indices])
 		if encrypt
 			curr = o[indices]
 		else
@@ -129,13 +129,13 @@ end
 function AESOFB(blocks::Array{UInt8, 1}, key::Array{UInt8, 1},
 	iv::Array{UInt8, 1})
 	noBlocks = keyStreamCheck(blocks, key, iv)
-	o = Array(UInt8, length(blocks))
+  o = Array{UInt8}(length(blocks))
 	prev = iv
 
 	for i=1:noBlocks
 		indices = blockIndices(blocks, i)
 		eb = AESEncrypt(prev, key)
-		o[indices] = eb[1:length(indices)] $ blocks[indices]
+    o[indices] = xor.(eb[1:length(indices)] , blocks[indices])
 		prev = eb
 	end
 
@@ -167,7 +167,7 @@ function AESCTR(blocks::Array{UInt8, 1}, key::Array{UInt8, 1},
 	for i=1:noBlocks
 		indices = blockIndices(blocks, i)
 		eb = AESEncrypt(curr, key)
-		o[indices] = eb[1:length(indices)] $ blocks[indices]
+    o[indices] = xor.(eb[1:length(indices)] , blocks[indices])
 		for bi=(length(curr) - 7):length(curr)
 			tmp = curr[bi]
 			curr[bi] = UInt8(Int(tmp) + 1)
