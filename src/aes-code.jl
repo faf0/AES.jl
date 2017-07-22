@@ -148,7 +148,8 @@ end
 
 function SubWord(w::Array{UInt8, 1})
 	assert(length(w) == WORDLENGTH)
-	map!(x -> SBOX[int(x) + 1], w)
+	map!(x -> SBOX[Int(x) + 1], w, w)
+  return w
 end
 
 function RotWord(w::Array{UInt8, 1})
@@ -229,8 +230,9 @@ end
 
 function SubBytesGen(a::Array{UInt8, 1}, inv::Bool)
 	box = inv ? INVSBOX : SBOX
-	f = (x) -> box[int(x) + 1]
-	return map!(f, a)
+	f = (x) -> box[Int(x) + 1]
+	map!(f, a, a)
+  return a
 end
 
 function ShiftRows(a::Array{UInt8, 1})
