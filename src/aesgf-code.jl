@@ -144,7 +144,7 @@ function gmulinv(a::UInt8)
 		# as defined by AES
 		return 0x00
 	else
-		return ATABLE[256 - LTABLE[int(a) + 1]]
+		return ATABLE[256 - LTABLE[Int(a) + 1]]
 	end
 end
 

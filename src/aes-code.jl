@@ -128,7 +128,7 @@ end
 function KeyExpansion(key::Array{UInt8, 1}, Nk::Int, Nr::Int)
 	assert(length(key) == (WORDLENGTH * Nk))
 
-	w = Array(UInt8, WORDLENGTH * Nb * (Nr + 1))
+	w = Array{UInt8}(WORDLENGTH * Nb * (Nr + 1))
 	w[1:(WORDLENGTH * Nk)] = copy(key)
 	i = Nk
 

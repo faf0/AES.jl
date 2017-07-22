@@ -102,12 +102,12 @@ const cipher8 = "874d6191b620e3261bef6864990db6ce"
 # Encrypt three random blocks using different modes of operation and
 # check if decryption recovers original blocks
 const BLOCK_BYTES = 16
-const ivrand =     rand(Uint8, BLOCK_BYTES)
-const keysrand =   rand(Uint8, div(128, 8))
-const keymrand =   rand(Uint8, div(192, 8))
-const keylrand =   rand(Uint8, div(256, 8))
-const plainrand =  rand(Uint8, 3 * BLOCK_BYTES)
-const plainrandl = rand(Uint8, 3 * BLOCK_BYTES + 1)
+const ivrand =     rand(UInt8, BLOCK_BYTES)
+const keysrand =   rand(UInt8, div(128, 8))
+const keymrand =   rand(UInt8, div(192, 8))
+const keylrand =   rand(UInt8, div(256, 8))
+const plainrand =  rand(UInt8, 3 * BLOCK_BYTES)
+const plainrandl = rand(UInt8, 3 * BLOCK_BYTES + 1)
 
 # AES ECB
 for key in (keysrand, keymrand, keylrand)
