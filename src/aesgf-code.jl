@@ -77,18 +77,26 @@ global const ATABLE = [
 
 # Addition over GF(2^8)
 function gadd(a::UInt8, b::UInt8)
-	a $ b
+  xor.(a , b)
+end
+
+function gadd(v::Array{UInt8})
+  s = v[1]
+  for x in v[2:end]
+    s = gadd(s, x)
+  end
+  return s
 end
 
 # Subtraction over GF(2^8)
 function gsub(a::UInt8, b::UInt8)
-	a $ b
+  xor.(a , b)
 end
 
 # Fast multiplication using (anti-)logarithm table.
 function gmul(a::UInt8, b::UInt8)
-	loga = int(LTABLE[int(a) + 1])
-	logb = int(LTABLE[int(b) + 1])
+	loga = Int(LTABLE[Int(a) + 1])
+	logb = Int(LTABLE[Int(b) + 1])
 	s = ATABLE[mod(loga + logb, 255) + 1]
 	# Attempt to resist timing attacks.
 	# Return 0x00 if a is zero or if b is zero.
@@ -136,7 +144,7 @@ function gmulinv(a::UInt8)
 		# as defined by AES
 		return 0x00
 	else
-		return ATABLE[256 - LTABLE[int(a) + 1]]
+		return ATABLE[256 - LTABLE[Int(a) + 1]]
 	end
 end
 

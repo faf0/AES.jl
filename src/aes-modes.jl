@@ -11,7 +11,7 @@ global const BLOCK_BYTES = (Nb * WORDLENGTH)
 # only hexadecimal characters.
 # The returned result is a string consisting of only hexadecimal
 # characters.
-function AESECB(blocks::ASCIIString, key::ASCIIString, encrypt::Bool)
+function AESECB(blocks::String, key::String, encrypt::Bool)
 	bytes2hex(AESECB(hex2bytes(blocks), hex2bytes(key), encrypt))
 end
 
@@ -21,7 +21,7 @@ end
 # direction.
 function AESECB(blocks::Array{UInt8, 1}, key::Array{UInt8, 1}, encrypt::Bool)
 	noBlocks = paddedCheck(blocks, key)
-	o = Array(UInt8, length(blocks))
+  o = Array{UInt8}(length(blocks))
 
 	for i=1:noBlocks
 		indices = blockIndices(blocks, i)
@@ -40,8 +40,8 @@ end
 # only hexadecimal characters.
 # The returned result is a string consisting of only hexadecimal
 # characters.
-function AESCBC(blocks::ASCIIString, key::ASCIIString,
-	iv::ASCIIString, encrypt::Bool)
+function AESCBC(blocks::String, key::String,
+	iv::String, encrypt::Bool)
 	bytes2hex(AESCBC(hex2bytes(blocks), hex2bytes(key), hex2bytes(iv),
 	encrypt))
 end
@@ -56,18 +56,18 @@ function AESCBC(blocks::Array{UInt8, 1}, key::Array{UInt8, 1},
 	if length(iv) != BLOCK_BYTES
 		error("IV does not have 16 bytes!")
 	end
-	o = Array(UInt8, length(blocks))
+  o = Array{UInt8}(length(blocks))
 	prev = iv
 
 	for i=1:noBlocks
 		indices = blockIndices(blocks, i)
 		if encrypt
-			curr = AESEncrypt(prev $ blocks[indices], key)
+      curr = AESEncrypt(xor.(prev , blocks[indices]), key)
 			o[indices] = curr
 			prev = curr
 		else
 			# decrypt
-			curr = AESDecrypt(blocks[indices], key) $ prev
+      curr = xor.(AESDecrypt(blocks[indices], key) , prev)
 			o[indices] = curr
 			prev = blocks[indices]
 		end
@@ -85,8 +85,8 @@ end
 # only hexadecimal characters.
 # The returned result is a string consisting of only hexadecimal
 # characters.
-function AESCFB(blocks::ASCIIString, key::ASCIIString,
-	iv::ASCIIString, encrypt::Bool)
+function AESCFB(blocks::String, key::String,
+	iv::String, encrypt::Bool)
 	bytes2hex(AESCFB(hex2bytes(blocks), hex2bytes(key), hex2bytes(iv),
 	encrypt))
 end
@@ -98,12 +98,12 @@ end
 function AESCFB(blocks::Array{UInt8, 1}, key::Array{UInt8, 1},
 	iv::Array{UInt8, 1}, encrypt::Bool)
 	noBlocks = keyStreamCheck(blocks, key, iv)
-	o = Array(UInt8, length(blocks))
+  o = Array{UInt8}(length(blocks))
 	curr = iv
 
 	for i=1:noBlocks
 		indices = blockIndices(blocks, i)
-		o[indices] = AESEncrypt(curr, key)[1:length(indices)] $ blocks[indices]
+		o[indices] = xor.(AESEncrypt(curr, key)[1:length(indices)] , blocks[indices])
 		if encrypt
 			curr = o[indices]
 		else
@@ -121,7 +121,7 @@ end
 # only hexadecimal characters.
 # The returned result is a string consisting of only hexadecimal
 # characters.
-function AESOFB(blocks::ASCIIString, key::ASCIIString, iv::ASCIIString)
+function AESOFB(blocks::String, key::String, iv::String)
 	bytes2hex(AESOFB(hex2bytes(blocks), hex2bytes(key), hex2bytes(iv)))
 end
 
@@ -129,13 +129,13 @@ end
 function AESOFB(blocks::Array{UInt8, 1}, key::Array{UInt8, 1},
 	iv::Array{UInt8, 1})
 	noBlocks = keyStreamCheck(blocks, key, iv)
-	o = Array(UInt8, length(blocks))
+  o = Array{UInt8}(length(blocks))
 	prev = iv
 
 	for i=1:noBlocks
 		indices = blockIndices(blocks, i)
 		eb = AESEncrypt(prev, key)
-		o[indices] = eb[1:length(indices)] $ blocks[indices]
+    o[indices] = xor.(eb[1:length(indices)] , blocks[indices])
 		prev = eb
 	end
 
@@ -149,7 +149,7 @@ end
 # The returned result is a string consisting of only hexadecimal
 # characters. Treats the low eight bytes of the iv array as the little endian
 # counter.
-function AESCTR(blocks::ASCIIString, key::ASCIIString, iv::ASCIIString)
+function AESCTR(blocks::String, key::String, iv::String)
 	bytes2hex(AESCTR(hex2bytes(blocks), hex2bytes(key), hex2bytes(iv)))
 end
 
@@ -162,15 +162,15 @@ function AESCTR(blocks::Array{UInt8, 1}, key::Array{UInt8, 1},
 	iv::Array{UInt8, 1})
 	noBlocks = keyStreamCheck(blocks, key, iv)
 	curr = copy(iv)
-	o = Array(UInt8, length(blocks))
+	o = Array{UInt8}(length(blocks))
 
 	for i=1:noBlocks
 		indices = blockIndices(blocks, i)
 		eb = AESEncrypt(curr, key)
-		o[indices] = eb[1:length(indices)] $ blocks[indices]
+    o[indices] = xor.(eb[1:length(indices)] , blocks[indices])
 		for bi=(length(curr) - 7):length(curr)
 			tmp = curr[bi]
-			curr[bi] = uint8(int(tmp) + 1)
+			curr[bi] = UInt8(Int(tmp) + 1)
 			if curr[bi] > tmp
 				# no byte overflow
 				break

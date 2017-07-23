@@ -64,7 +64,7 @@ global const INVMIXCOLUMNSMATRIX = [
 # only hexadecimal characters.
 # The returned ciphertext is a string consisting of only hexadecimal
 # characters.
-function AESEncrypt(plain::ASCIIString, key::ASCIIString)
+function AESEncrypt(plain::String, key::String)
 	bytes2hex(AESEncrypt(hex2bytes(plain), hex2bytes(key)))
 end
 
@@ -74,7 +74,7 @@ end
 # only hexadecimal characters.
 # The returned plaintext is a string consisting of only hexadecimal
 # characters.
-function AESDecrypt(cipher::ASCIIString, key::ASCIIString)
+function AESDecrypt(cipher::String, key::String)
 	bytes2hex(AESDecrypt(hex2bytes(cipher), hex2bytes(key)))
 end
 
@@ -128,18 +128,18 @@ end
 function KeyExpansion(key::Array{UInt8, 1}, Nk::Int, Nr::Int)
 	assert(length(key) == (WORDLENGTH * Nk))
 
-	w = Array(UInt8, WORDLENGTH * Nb * (Nr + 1))
+	w = Array{UInt8}(WORDLENGTH * Nb * (Nr + 1))
 	w[1:(WORDLENGTH * Nk)] = copy(key)
 	i = Nk
 
 	while i < (Nb * (Nr + 1))
 		temp = w[((i - 1) * WORDLENGTH + 1):(i * WORDLENGTH)]
 		if mod(i, Nk) == 0
-			temp = SubWord(RotWord(temp)) $ Rcon(div(i, Nk))
+      temp = xor.(SubWord(RotWord(temp)) , Rcon(div(i, Nk)))
 		elseif (Nk > 6) && (mod(i, Nk) == Nb)
 			temp = SubWord(temp)
 		end
-		w[(i * WORDLENGTH + 1):((i + 1) * WORDLENGTH)] = w[((i - Nk) * WORDLENGTH + 1):((i - Nk + 1) * WORDLENGTH)] $ temp
+    w[(i * WORDLENGTH + 1):((i + 1) * WORDLENGTH)] = xor.(w[((i - Nk) * WORDLENGTH + 1):((i - Nk + 1) * WORDLENGTH)] , temp)
 		i += 1
 	end
 
@@ -148,7 +148,8 @@ end
 
 function SubWord(w::Array{UInt8, 1})
 	assert(length(w) == WORDLENGTH)
-	map!(x -> SBOX[int(x) + 1], w)
+	map!(x -> SBOX[Int(x) + 1], w, w)
+  return w
 end
 
 function RotWord(w::Array{UInt8, 1})
@@ -211,12 +212,12 @@ end
 
 # Returns one-based column indices of the given column (one-based).
 function columnIndices(column::Int)
-	return [column:Nb:Nb*Nb]
+	return column:Nb:Nb*Nb
 end
 
 # Returns row indices of the given row (one-based).
 function rowIndices(row::Int)
-	return [((row - 1) * Nb + 1):(row * Nb)]
+	return ((row - 1) * Nb + 1):(row * Nb)
 end
 
 function SubBytes(a::Array{UInt8, 1})
@@ -229,8 +230,9 @@ end
 
 function SubBytesGen(a::Array{UInt8, 1}, inv::Bool)
 	box = inv ? INVSBOX : SBOX
-	f = (x) -> box[int(x) + 1]
-	return map!(f, a)
+	f = (x) -> box[Int(x) + 1]
+	map!(f, a, a)
+  return a
 end
 
 function ShiftRows(a::Array{UInt8, 1})
@@ -247,7 +249,7 @@ function ShiftRowsGen(a::Array{UInt8, 1}, inv::Bool)
 	for r=2:Nb
 		indices = columnIndices(r)
 		step = inv ? Nb + 2 - r : r
-		p = map(c -> mod(c + step - 1, Nb) + 1, [0:(Nb-1)])
+		p = map(c -> mod(c + step - 1, Nb) + 1, 0:(Nb-1))
 		a[indices] = a[indices][p]
 	end
 	return a
@@ -271,7 +273,7 @@ function MixColumnsGen(a::Array{UInt8, 1}, inv::Bool)
 		# Matrix multiplication with Galois field operations
 		for r=1:Nb
 			mi = matrix[rowIndices(r)]
-			a[indices[r]] = reduce(gadd, map(gmul, ai, mi))
+			a[indices[r]] = gadd(map(gmul, ai, mi))
 		end
 	end
 	return a
