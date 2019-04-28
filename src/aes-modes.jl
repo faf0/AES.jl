@@ -21,7 +21,7 @@ end
 # direction.
 function AESECB(blocks::Array{UInt8, 1}, key::Array{UInt8, 1}, encrypt::Bool)
 	noBlocks = paddedCheck(blocks, key)
-  o = Array{UInt8}(length(blocks))
+  o = Array{UInt8}(undef, length(blocks))
 
 	for i=1:noBlocks
 		indices = blockIndices(blocks, i)
@@ -56,7 +56,7 @@ function AESCBC(blocks::Array{UInt8, 1}, key::Array{UInt8, 1},
 	if length(iv) != BLOCK_BYTES
 		error("IV does not have 16 bytes!")
 	end
-  o = Array{UInt8}(length(blocks))
+  o = Array{UInt8}(undef, length(blocks))
 	prev = iv
 
 	for i=1:noBlocks
@@ -98,7 +98,7 @@ end
 function AESCFB(blocks::Array{UInt8, 1}, key::Array{UInt8, 1},
 	iv::Array{UInt8, 1}, encrypt::Bool)
 	noBlocks = keyStreamCheck(blocks, key, iv)
-  o = Array{UInt8}(length(blocks))
+  o = Array{UInt8}(undef, length(blocks))
 	curr = iv
 
 	for i=1:noBlocks
@@ -129,7 +129,7 @@ end
 function AESOFB(blocks::Array{UInt8, 1}, key::Array{UInt8, 1},
 	iv::Array{UInt8, 1})
 	noBlocks = keyStreamCheck(blocks, key, iv)
-  o = Array{UInt8}(length(blocks))
+  o = Array{UInt8}(undef, length(blocks))
 	prev = iv
 
 	for i=1:noBlocks
@@ -162,7 +162,7 @@ function AESCTR(blocks::Array{UInt8, 1}, key::Array{UInt8, 1},
 	iv::Array{UInt8, 1})
 	noBlocks = keyStreamCheck(blocks, key, iv)
 	curr = copy(iv)
-	o = Array{UInt8}(length(blocks))
+	o = Array{UInt8}(undef, length(blocks))
 
 	for i=1:noBlocks
 		indices = blockIndices(blocks, i)
@@ -215,7 +215,6 @@ end
 # Returns the indices of the bytes of a block given a one-based
 # block number. The last block may be incomplete.
 function blockIndices(blocks::Array{UInt8, 1}, blockNumber::Int)
-	assert(blockNumber >= 1)
+	@assert(blockNumber >= 1)
 	((blockNumber - 1) * BLOCK_BYTES + 1):(min(blockNumber * BLOCK_BYTES, length(blocks)))
 end
-

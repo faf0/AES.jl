@@ -1,4 +1,4 @@
-using Base.Test
+using Test
 using AES
 
 mutable struct Testcase
@@ -22,7 +22,7 @@ function loadtests(filename::String)
     if line == ""
       continue
 
-    elseif ismatch(r"^#", line)
+    elseif occursin(r"^#", line)
       continue
 
     elseif line == "[ENCRYPT]"
@@ -31,15 +31,15 @@ function loadtests(filename::String)
     elseif line == "[DECRYPT]"
       encrypt = false
 
-    elseif ismatch(r"^KEY",line)
+    elseif occursin(r"^KEY",line)
       x = match(r"^KEY = ([0-9A-Fa-f]+)", line)
       testcase.key = x.captures[1]
 
-    elseif ismatch(r"^IV",line)
+    elseif occursin(r"^IV",line)
       x = match(r"^IV = ([0-9A-Fa-f]+)", line)
       testcase.iv = x.captures[1]
 
-    elseif ismatch(r"^PLAINTEXT",line)
+    elseif occursin(r"^PLAINTEXT",line)
       x = match(r"^PLAINTEXT = ([0-9A-Fa-f]+)", line)
       if encrypt
         testcase.input = x.captures[1]
@@ -47,7 +47,7 @@ function loadtests(filename::String)
         testcase.output = x.captures[1]
       end
 
-    elseif ismatch(r"^CIPHERTEXT",line)
+    elseif occursin(r"^CIPHERTEXT",line)
       x = match(r"^CIPHERTEXT = ([0-9A-Fa-f]+)", line)
       if encrypt
         testcase.output = x.captures[1]
@@ -72,17 +72,17 @@ end
 for testfile in readdir("NIST-AES-Vectors")
   fn = identity
 
-  if ismatch(r"^(CBC|CFB|ECB|OFB)", testfile)
+  if occursin(r"^(CBC|CFB|ECB|OFB)", testfile)
     testcases = loadtests("NIST-AES-Vectors/$testfile")
 
     for testcase in testcases
-      if ismatch(r"^CBC", testfile)
+      if occursin(r"^CBC", testfile)
         @test AESCBC(testcase.input, testcase.key, testcase.iv, testcase.encrypt) == testcase.output
-      elseif ismatch(r"^CFB", testfile)
+      elseif occursin(r"^CFB", testfile)
         @test AESCFB(testcase.input, testcase.key, testcase.iv, testcase.encrypt) == testcase.output
-      elseif ismatch(r"^ECB", testfile)
+      elseif occursin(r"^ECB", testfile)
         @test AESECB(testcase.input, testcase.key, testcase.encrypt) == testcase.output
-      elseif ismatch(r"^OFB", testfile)
+      elseif occursin(r"^OFB", testfile)
         @test AESOFB(testcase.input, testcase.key, testcase.iv) == testcase.output
       end
     end

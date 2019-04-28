@@ -126,9 +126,9 @@ function AESParameters(key::Array{UInt8, 1})
 end
 
 function KeyExpansion(key::Array{UInt8, 1}, Nk::Int, Nr::Int)
-	assert(length(key) == (WORDLENGTH * Nk))
+	@assert(length(key) == (WORDLENGTH * Nk))
 
-	w = Array{UInt8}(WORDLENGTH * Nb * (Nr + 1))
+	w = Array{UInt8}(undef, WORDLENGTH * Nb * (Nr + 1))
 	w[1:(WORDLENGTH * Nk)] = copy(key)
 	i = Nk
 
@@ -147,18 +147,18 @@ function KeyExpansion(key::Array{UInt8, 1}, Nk::Int, Nr::Int)
 end
 
 function SubWord(w::Array{UInt8, 1})
-	assert(length(w) == WORDLENGTH)
+	@assert(length(w) == WORDLENGTH)
 	map!(x -> SBOX[Int(x) + 1], w, w)
   return w
 end
 
 function RotWord(w::Array{UInt8, 1})
-	assert(length(w) == WORDLENGTH)
+	@assert(length(w) == WORDLENGTH)
 	permute!(w, [2, 3, 4, 1])
 end
 
 function Rcon(i::Int)
-	assert(i > 0)
+	@assert(i > 0)
 	x = 0x01
 	for j=1:(i-1)
 		x = gmul(x, 0x02)
@@ -167,9 +167,9 @@ function Rcon(i::Int)
 end
 
 function AESCipher(inBytes::Array{UInt8, 1}, w::Array{UInt8, 1}, Nr::Int)
-	assert(WORDLENGTH == Nb)
-	assert(length(inBytes) == (WORDLENGTH * Nb))
-	assert(length(w) == (WORDLENGTH * Nb * (Nr + 1)))
+	@assert(WORDLENGTH == Nb)
+	@assert(length(inBytes) == (WORDLENGTH * Nb))
+	@assert(length(w) == (WORDLENGTH * Nb * (Nr + 1)))
 
 	state = copy(inBytes)
 	AddRoundKey(state, w[1:(Nb * WORDLENGTH)])
@@ -189,9 +189,9 @@ function AESCipher(inBytes::Array{UInt8, 1}, w::Array{UInt8, 1}, Nr::Int)
 end
 
 function AESInvCipher(inBytes::Array{UInt8, 1}, w::Array{UInt8, 1}, Nr::Int)
-	assert(WORDLENGTH == Nb)
-	assert(length(inBytes) == (WORDLENGTH * Nb))
-	assert(length(w) == (WORDLENGTH * Nb * (Nr + 1)))
+	@assert(WORDLENGTH == Nb)
+	@assert(length(inBytes) == (WORDLENGTH * Nb))
+	@assert(length(w) == (WORDLENGTH * Nb * (Nr + 1)))
 
 	state = copy(inBytes)
 	AddRoundKey(state, w[(Nr * Nb * WORDLENGTH + 1):((Nr + 1) * Nb * WORDLENGTH)])
@@ -269,7 +269,7 @@ function MixColumnsGen(a::Array{UInt8, 1}, inv::Bool)
 	for c=1:Nb
 		indices = rowIndices(c)
 		ai = copy(a[indices])
-		assert(length(ai) == Nb)
+		@assert(length(ai) == Nb)
 		# Matrix multiplication with Galois field operations
 		for r=1:Nb
 			mi = matrix[rowIndices(r)]
@@ -280,7 +280,7 @@ function MixColumnsGen(a::Array{UInt8, 1}, inv::Bool)
 end
 
 function AddRoundKey(s::Array{UInt8, 1}, w::Array{UInt8, 1})
-	assert(length(w) == (WORDLENGTH * Nb) && (WORDLENGTH == Nb))
+	@assert(length(w) == (WORDLENGTH * Nb) && (WORDLENGTH == Nb))
 	return map!(gadd, s, s, w)
 end
 
