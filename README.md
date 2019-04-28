@@ -22,9 +22,9 @@ The following code shows how to use AES in OFB mode for encryption.
 
 ~~~
 using AES
-key = rand(Uint8, div(256, 8))
-iv = rand(Uint8, 16)
-plaintext = rand(Uint8, 3 * 16)
+key = rand(UInt8, div(256, 8))
+iv = rand(UInt8, 16)
+plaintext = rand(UInt8, 3 * 16)
 AESOFB(plaintext, key, iv)
 ~~~
 
