@@ -14,7 +14,9 @@ This package also allows to use AES in the following block cipher modes of opera
 
 # Installation
 
-Use Pkg.clone with the corresponding URL in Julia to install this package.
+In the Julia shell, switch to the pkg environment by pressing `]`.
+In the package environment, run `add` with the URL of this repository as the only parameter.
+Alternatively, clone this repository and run `add .` in the package environment.
 
 # Example Usage
 
