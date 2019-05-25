@@ -91,10 +91,14 @@ const cipher7 = cipher6
 @test AESOFB(cipher7, key7, iv7) == plain7
 
 # AES CTR
-const iv8 =     "f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff" # is actually the nonce
+# Test with three blocks for AES to test counter incrementation
+# Source: https://github.com/servo/nss/blob/3d07e85a597ce9c5c1ec80f85983efcb26aa58e1/cmd/bltest/tests/aes_ctr/aes_ctr_tests_source.txt#L27-L48
+const iv8 =     "f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff" # is actually the nonce for the first block
+# "f0f1f2f3f4f5f6f7f8f9fafbfcfdff00" is the nonce for the second block
+# "f0f1f2f3f4f5f6f7f8f9fafbfcfdff01" is the nonce for the third block
 const key8 =    key4
-const plain8 =  plain4
-const cipher8 = "874d6191b620e3261bef6864990db6ce"
+const plain8 =  string(plain4, "ae2d8a571e03ac9c9eb76fac45af8e51", "30c81c46a35ce411e5fbc1191a0a52ef")
+const cipher8 = string("874d6191b620e3261bef6864990db6ce", "9806f66b7970fdff8617187bb9fffdff", "5ae4df3edbd5d35e5b4f09020db03eab")
 
 @test AESCTR(plain8, key8, iv8) == cipher8
 @test AESCTR(cipher8, key8, iv8) == plain8

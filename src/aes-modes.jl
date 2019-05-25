@@ -154,10 +154,10 @@ function AESCTR(blocks::String, key::String, iv::String)
 end
 
 # Carries out AES in CTR mode on the given blocks using the given key.
-# CBC mode is carried out in encryption direction if the parameter
+# CTR mode is carried out in encryption direction if the parameter
 # encrypt is true. Otherwise, CTR mode is carried out in decryption
-# direction. Treats the low eight bytes of the iv array as the little endian
-# counter.
+# direction. Treats the least-significant eight bytes of the iv array
+# as the big endian counter.
 function AESCTR(blocks::Array{UInt8, 1}, key::Array{UInt8, 1},
 	iv::Array{UInt8, 1})
 	noBlocks = keyStreamCheck(blocks, key, iv)
@@ -167,10 +167,10 @@ function AESCTR(blocks::Array{UInt8, 1}, key::Array{UInt8, 1},
 	for i=1:noBlocks
 		indices = blockIndices(blocks, i)
 		eb = AESEncrypt(curr, key)
-    o[indices] = xor.(eb[1:length(indices)] , blocks[indices])
-		for bi=(length(curr) - 7):length(curr)
+		o[indices] = xor.(eb[1:length(indices)] , blocks[indices])
+		for bi=reverse((length(curr) - 7):length(curr))
 			tmp = curr[bi]
-			curr[bi] = UInt8(Int(tmp) + 1)
+			curr[bi] = UInt8(mod(Int(tmp) + 1, 256))
 			if curr[bi] > tmp
 				# no byte overflow
 				break
