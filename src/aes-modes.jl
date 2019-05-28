@@ -21,7 +21,7 @@ end
 # direction.
 function AESECB(blocks::Array{UInt8, 1}, key::Array{UInt8, 1}, encrypt::Bool)
 	noBlocks = paddedCheck(blocks, key)
-  o = Array{UInt8}(undef, length(blocks))
+	o = Array{UInt8}(undef, length(blocks))
 
 	for i=1:noBlocks
 		indices = blockIndices(blocks, i)
@@ -56,18 +56,18 @@ function AESCBC(blocks::Array{UInt8, 1}, key::Array{UInt8, 1},
 	if length(iv) != BLOCK_BYTES
 		error("IV does not have 16 bytes!")
 	end
-  o = Array{UInt8}(undef, length(blocks))
+	o = Array{UInt8}(undef, length(blocks))
 	prev = iv
 
 	for i=1:noBlocks
 		indices = blockIndices(blocks, i)
 		if encrypt
-      curr = AESEncrypt(xor.(prev , blocks[indices]), key)
+			curr = AESEncrypt(xor.(prev , blocks[indices]), key)
 			o[indices] = curr
 			prev = curr
 		else
 			# decrypt
-      curr = xor.(AESDecrypt(blocks[indices], key) , prev)
+			curr = xor.(AESDecrypt(blocks[indices], key) , prev)
 			o[indices] = curr
 			prev = blocks[indices]
 		end
@@ -98,7 +98,7 @@ end
 function AESCFB(blocks::Array{UInt8, 1}, key::Array{UInt8, 1},
 	iv::Array{UInt8, 1}, encrypt::Bool)
 	noBlocks = keyStreamCheck(blocks, key, iv)
-  o = Array{UInt8}(undef, length(blocks))
+	o = Array{UInt8}(undef, length(blocks))
 	curr = iv
 
 	for i=1:noBlocks
@@ -129,13 +129,13 @@ end
 function AESOFB(blocks::Array{UInt8, 1}, key::Array{UInt8, 1},
 	iv::Array{UInt8, 1})
 	noBlocks = keyStreamCheck(blocks, key, iv)
-  o = Array{UInt8}(undef, length(blocks))
+	o = Array{UInt8}(undef, length(blocks))
 	prev = iv
 
 	for i=1:noBlocks
 		indices = blockIndices(blocks, i)
 		eb = AESEncrypt(prev, key)
-    o[indices] = xor.(eb[1:length(indices)] , blocks[indices])
+		o[indices] = xor.(eb[1:length(indices)] , blocks[indices])
 		prev = eb
 	end
 
