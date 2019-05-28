@@ -91,27 +91,40 @@ const cipher7 = cipher6
 @test AESOFB(cipher7, key7, iv7) == plain7
 
 # AES CTR
-# Test with three blocks for AES to test counter incrementation
-# Source: https://github.com/servo/nss/blob/3d07e85a597ce9c5c1ec80f85983efcb26aa58e1/cmd/bltest/tests/aes_ctr/aes_ctr_tests_source.txt#L27-L48
-const iv8 =     "f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff" # is actually the nonce for the first block
-# "f0f1f2f3f4f5f6f7f8f9fafbfcfdff00" is the nonce for the second block
-# "f0f1f2f3f4f5f6f7f8f9fafbfcfdff01" is the nonce for the third block
+# Test with four blocks for AES to test counter incrementation
+# Source: https://github.com/servo/nss/blob/3d07e85a597ce9c5c1ec80f85983efcb26aa58e1/cmd/bltest/tests/aes_ctr/aes_ctr_tests_source.txt#L27-L54
+const iv8 =     "f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff" # first input block
+#               "f0f1f2f3f4f5f6f7f8f9fafbfcfdff00" # second input block
+#               "f0f1f2f3f4f5f6f7f8f9fafbfcfdff01" # third input block
+#               "f0f1f2f3f4f5f6f7f8f9fafbfcfdff02" # fourth input block
 const key8 =    key4
-const plain8 =  string(plain4, "ae2d8a571e03ac9c9eb76fac45af8e51", "30c81c46a35ce411e5fbc1191a0a52ef")
-const cipher8 = string("874d6191b620e3261bef6864990db6ce", "9806f66b7970fdff8617187bb9fffdff", "5ae4df3edbd5d35e5b4f09020db03eab")
+const plain8 =  string(plain4, "ae2d8a571e03ac9c9eb76fac45af8e51", "30c81c46a35ce411e5fbc1191a0a52ef", "f69f2445df4f9b17ad2b417be66c3710")
+const cipher8 = string("874d6191b620e3261bef6864990db6ce", "9806f66b7970fdff8617187bb9fffdff", "5ae4df3edbd5d35e5b4f09020db03eab", "1e031dda2fbe03d1792170a0f3009cee")
 
 @test AESCTR(plain8, key8, iv8) == cipher8
 @test AESCTR(cipher8, key8, iv8) == plain8
 
-# Encrypt three random blocks using different modes of operation and
+# Test overflow of 8-byte big endian counter
+const iv9 =     "aabbccddeeffaabbffffffffffffffff" # first input block
+#               "aabbccddeeffaabb0000000000000000" # second input block
+#               "aabbccddeeffaabb0000000000000001" # third input block
+#               "aabbccddeeffaabb0000000000000002" # fourth input block
+const key9 =    key8
+const plain9 =  plain8
+const cipher9 = string("036c5f64f290c0a3efed8bb8fc3a98a5", "40083d03ba096ab72543aa92c590817c", "d1ea82fc1aa999725dd4c4e627703a46", "375d1e844f3cf18b57f230d2def50441")
+
+@test AESCTR(plain9, key9, iv9) == cipher9
+@test AESCTR(cipher9, key9, iv9) == plain9
+
+# Encrypt four random blocks using different modes of operation and
 # check if decryption recovers original blocks
 const BLOCK_BYTES = 16
 const ivrand =     rand(UInt8, BLOCK_BYTES)
 const keysrand =   rand(UInt8, div(128, 8))
 const keymrand =   rand(UInt8, div(192, 8))
 const keylrand =   rand(UInt8, div(256, 8))
-const plainrand =  rand(UInt8, 3 * BLOCK_BYTES)
-const plainrandl = rand(UInt8, 3 * BLOCK_BYTES + 1)
+const plainrand =  rand(UInt8, 4 * BLOCK_BYTES)
+const plainrandl = rand(UInt8, 4 * BLOCK_BYTES + 1)
 
 # AES ECB
 for key in (keysrand, keymrand, keylrand)
