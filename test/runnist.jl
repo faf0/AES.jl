@@ -58,8 +58,8 @@ function loadtests(filename::String)
     end
 
     if testcase.key != "" &&
-       testcase.input != "" &&
-       testcase.output != ""
+      testcase.input != "" &&
+      testcase.output != ""
 
       testcase.encrypt = encrypt
       push!(testcases, testcase)
@@ -90,7 +90,4 @@ for testfile in readdir("NIST-AES-Vectors")
     println("skipping: $testfile")
   end
 end
-
-
-
 
