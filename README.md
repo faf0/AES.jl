@@ -12,7 +12,7 @@ This package supports AES with the following block cipher modes of operation:
 
 Note that the implementation is not optimized with respect to performance or
 resistance to attacks including timing attacks.
-Therefore, this package is *not recommended for production use*.
+Therefore, this package is **not recommended for production use**.
 
 # Installation and Usage
 
