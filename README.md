@@ -34,7 +34,7 @@ following:
 - In a terminal, `cd` to a directory in which you want to run your programs.
 - Run `julia` to open the Julia shell.
 - Press `]` to switch to the pkg environment.
-- Run `activate` with the URL of this repository as the only parameter.
+- Run `add` with the URL of this repository as the only parameter.
 - Press backspace to return to the Julia shell where you can run Julia commands
   using this package.
 
