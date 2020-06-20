@@ -1,5 +1,6 @@
 using Test
-using AES
+
+include("../src/aes-modes.jl")
 
 mutable struct Testcase
   key::String

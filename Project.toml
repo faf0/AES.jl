@@ -1,0 +1,4 @@
+name = "AES"
+uuid = "15a180a4-738c-4bf0-92bf-fd08aa96a747"
+authors = ["Fabian Foerg <3429782+faf0@users.noreply.github.com>"]
+version = "1.0.0"
